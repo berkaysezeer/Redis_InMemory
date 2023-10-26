@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using InMemoryApp.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace InMemoryApp.Web.Controllers
@@ -10,6 +11,19 @@ namespace InMemoryApp.Web.Controllers
         public ProductsController(IMemoryCache memoryCache)
         {
             _memoryCache = memoryCache;
+        }
+
+        public IActionResult Detail()
+        {
+            Product product = new()
+            {
+                Id = 1,
+                Name = "Kalem"
+            };
+
+            _memoryCache.Set<Product>("Product:1", product);
+
+            return View();
         }
 
         public IActionResult Index()
@@ -63,6 +77,8 @@ namespace InMemoryApp.Web.Controllers
 
             _memoryCache.TryGetValue("Callback", out string callback);
             ViewBag.Callback = callback;
+
+            ViewBag.Product = _memoryCache.Get<Product>("Product:1");
 
             return View();
         }
