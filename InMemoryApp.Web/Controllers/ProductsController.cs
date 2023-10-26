@@ -28,6 +28,7 @@ namespace InMemoryApp.Web.Controllers
             //Zaman cache'inin ömrünü ayarlıyoruz
             MemoryCacheEntryOptions options = new MemoryCacheEntryOptions();
             options.AbsoluteExpiration = DateTime.Now.AddMinutes(1);
+            options.Priority = CacheItemPriority.High;
 
             //eğer 10 saniye içinde erişilmezse silinir, erişilirse 10 saniye daha uzar
             options.SlidingExpiration = TimeSpan.FromSeconds(10);
