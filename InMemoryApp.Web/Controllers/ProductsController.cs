@@ -27,11 +27,17 @@ namespace InMemoryApp.Web.Controllers
 
             //Zaman cache'inin ömrünü ayarlıyoruz
             MemoryCacheEntryOptions options = new MemoryCacheEntryOptions();
-            options.AbsoluteExpiration = DateTime.Now.AddMinutes(1);
+            options.AbsoluteExpiration = DateTime.Now.AddSeconds(30);
             options.Priority = CacheItemPriority.High;
 
             //eğer 10 saniye içinde erişilmezse silinir, erişilirse 10 saniye daha uzar
             options.SlidingExpiration = TimeSpan.FromSeconds(10);
+
+            //delegeler metot işaret eder
+            options.RegisterPostEvictionCallback((key, value, reason, state) =>
+            {
+                _memoryCache.Set<string>("Callback", $"{key} ({value}) --> {reason}");
+            });
 
             _memoryCache.Set<string>("Zaman", DateTime.Now.ToString(), options);
 
@@ -54,6 +60,9 @@ namespace InMemoryApp.Web.Controllers
 
             _memoryCache.TryGetValue("Zaman", out string zamanCache);
             ViewBag.Zaman = zamanCache;
+
+            _memoryCache.TryGetValue("Callback", out string callback);
+            ViewBag.Callback = callback;
 
             return View();
         }
