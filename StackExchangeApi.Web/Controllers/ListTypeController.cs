@@ -16,6 +16,7 @@ namespace StackExchangeApi.Web.Controllers
             db = _redisService.GetDb(1);
 
         }
+
         public IActionResult Index()
         {
             List<string> nameList = new List<string>();
