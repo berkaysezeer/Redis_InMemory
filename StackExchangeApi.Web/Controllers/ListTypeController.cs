@@ -8,7 +8,7 @@ namespace StackExchangeApi.Web.Controllers
     {
         private readonly RedisService _redisService;
         private readonly IDatabase db;
-        private string listKey = "names";
+        private string listKey = "sortedsetnames";
 
         public ListTypeController(RedisService redisService)
         {

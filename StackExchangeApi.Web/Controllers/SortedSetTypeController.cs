@@ -4,16 +4,16 @@ using StackExchangeApi.Web.Services;
 
 namespace StackExchangeApi.Web.Controllers
 {
-    public class SetTypeController : Controller
+    public class SortedSetTypeController : Controller
     {
         private readonly RedisService _redisService;
         private readonly IDatabase db;
-        private string listKey = "setnames";
+        private string listKey = "sortedsetnames";
 
-        public SetTypeController(RedisService redisService)
+        public SortedSetTypeController(RedisService redisService)
         {
             _redisService = redisService;
-            db = _redisService.GetDb(2);
+            db = _redisService.GetDb(3);
         }
 
         public IActionResult Index()
@@ -21,7 +21,13 @@ namespace StackExchangeApi.Web.Controllers
             HashSet<string> nameList = new HashSet<string>();
             if (db.KeyExists(listKey))
             {
-                db.SetMembers(listKey).ToList().ForEach(x =>
+                //db.SortedSetRangeByValue(listKey).ToList().ForEach(x =>
+                //{
+                //    nameList.Add(x.ToString());
+                //});
+
+                //sıralayabilmek için order: Order.Descending
+                db.SortedSetRangeByRank(listKey, order: Order.Descending).ToList().ForEach(x =>
                 {
                     nameList.Add(x.ToString());
                 });
@@ -31,18 +37,18 @@ namespace StackExchangeApi.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(string name)
+        public IActionResult Add(string name, int score)
         {
             //if (!db.KeyExists(listKey))
-                db.KeyExpire(listKey, DateTime.Now.AddMinutes(5));
+            db.KeyExpire(listKey, DateTime.Now.AddMinutes(5));
 
-            db.SetAdd(listKey, name);
+            db.SortedSetAdd(listKey, name, score);
             return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Remove(string name)
         {
-            await db.SetRemoveAsync(listKey, name);
+            await db.SortedSetRemoveAsync(listKey, name);
             return RedirectToAction("Index");
         }
     }
