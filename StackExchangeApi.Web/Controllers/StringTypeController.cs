@@ -27,7 +27,9 @@ namespace StackExchangeApi.Web.Controllers
         public IActionResult Show()
         {
             var name = db.StringGet("name");
-            if (name.HasValue) ViewBag.Name = name.ToString();
+            var nameLen = db.StringLength("name");
+
+            if (name.HasValue) ViewBag.Name = $"{name} ({nameLen})";
 
             var ziyaretci = db.StringIncrement("ziyaretci");
             ViewBag.Ziyaretci = ziyaretci.ToString();
